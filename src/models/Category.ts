@@ -1,3 +1,4 @@
+import { ValidationError } from "../errors/ValidationError.js";
 export class Category {
   private id?: string | undefined;
   private name: string;
@@ -13,11 +14,14 @@ export class Category {
     icon?: string,
   ) {
     this.id = undefined;
-    this.name = name;
+    this.name = "";
     this.description = description;
     this.icon = icon;
-    this.display_order = display_order;
+    this.display_order = 0;
     this.active = true;
+
+    this.rename(name);
+    this.changeDisplayOrder(display_order);
   }
 
   static restore(
@@ -52,12 +56,16 @@ export class Category {
     return this.display_order;
   }
 
-  public isActive(): boolean{
+  public isActive(): boolean {
     return this.active;
   }
 
   rename(name: string): void {
-    this.name = name;
+    if (typeof name !== "string" || name.trim().length === 0) {
+      throw new ValidationError("O nome da categoria é obrigatório.");
+    }
+
+    this.name = name.trim();
   }
 
   changeDescription(description: string): void {
@@ -69,6 +77,12 @@ export class Category {
   }
 
   changeDisplayOrder(display_order: number): void {
+    if (!Number.isInteger(display_order) || display_order < 0) {
+      throw new ValidationError(
+        "A ordem de exibição deve ser um número inteiro maior ou igual a zero.",
+      );
+    }
+
     this.display_order = display_order;
   }
 

@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import CategoryRepository from "../repositories/CategoryRepository.js";
 import { Category } from "../models/Category.js";
+import { ValidationError } from "../errors/ValidationError.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 
 async function getAll(req: Request, res: Response) {
   try {
@@ -40,8 +42,14 @@ async function getById(req: Request<{ id: string }>, res: Response) {
   } catch (error) {
     console.log("Erro ao buscar categoria: ", error);
 
-    res.status(404).json({
-      message: "Erro ao buscar categoria.",
+    if (error instanceof NotFoundError) {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+
+    res.status(500).json({
+      message: "Erro interno ao buscar categoria.",
     });
   }
 }
@@ -58,15 +66,21 @@ async function create(req: Request, res: Response) {
   } catch (error) {
     console.log("Erro ao criar categoria: ", error);
 
+    if (error instanceof ValidationError) {
+      res.status(400).json({
+        message: error.message,
+      });
+    }
+
     res.status(500).json({
-      message: "Erro ao criar categoria.",
+      message: "Erro interno ao criar categoria.",
     });
   }
 }
 
 async function update(req: Request<{ id: string }>, res: Response) {
   const { id } = req.params;
-  const { name, display_order, description, icon } = req.body;
+  const { name, display_order, description, icon, active } = req.body;
 
   if (!id) {
     return res.status(400).json({
@@ -77,14 +91,45 @@ async function update(req: Request<{ id: string }>, res: Response) {
   try {
     const category = await CategoryRepository.findById(id);
 
+    if (name !== undefined) {
+      category.rename(name);
+    }
+    if (description !== undefined) {
+      category.changeDescription(description);
+    }
+    if (icon !== undefined) {
+      category.changeIcon(icon);
+    }
+    if (display_order !== undefined) {
+      category.changeDisplayOrder(display_order);
+    }
+    if (active === true) {
+      category.activate();
+    }
+    if (active === false) {
+      category.deactivate();
+    }
+
     const updateCategory = await CategoryRepository.update(category);
 
     res.status(200).json(updateCategory);
   } catch (error) {
     console.log("Erro ao atualizar categoria: ", error);
 
-    res.status(404).json({
-      message: "Categoria não encontrada.",
+    if (error instanceof ValidationError) {
+      res.status(400).json({
+        message: error.message,
+      });
+    }
+
+    if (error instanceof NotFoundError) {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+
+    res.status(500).json({
+      message: "Erro interno ao atualizar categoria.",
     });
   }
 }
