@@ -107,11 +107,11 @@ async function update(req: Request<{ id: string }>, res: Response) {
     }
 
     if (active === true) {
-      category.activate;
+      category.activate();
     }
 
     if (active === false) {
-      category.deactivate;
+      category.deactivate();
     }
 
     const updateCategory = await CategoryRepository.update(category);
