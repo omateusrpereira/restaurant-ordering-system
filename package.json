@@ -26,13 +26,13 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "dev": "node --watch --env-file=.env --import=tsx/esm src/server.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "start": "node --env-file=.env dist/server.js"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
     "tsx": "^4.23.12",
-    "typescript": "^7.0.2"
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",

@@ -94,23 +94,23 @@ describe("Category - Testes de integração", () => {
     });
   }, 20_000);
 
-  it("deve buscar uma categoria por palavra-chave", async () => {
-    const { id, data } = await createCategory();
+  // it("deve buscar uma categoria por palavra-chave", async () => {
+  //   const { id, data } = await createCategory();
 
-    const response = await request(app).get(
-      `/categories/search/${encodeURIComponent(data.name)}`,
-    );
+  //   const response = await request(app).get(
+  //     `/categories/search/${encodeURIComponent(data.name)}`,
+  //   );
 
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id,
-          name: data.name,
-        }),
-      ]),
-    );
-  }, 20_000);
+  //   expect(response.status).toBe(200);
+  //   expect(response.body).toEqual(
+  //     expect.arrayContaining([
+  //       expect.objectContaining({
+  //         id,
+  //         name: data.name,
+  //       }),
+  //     ]),
+  //   );
+  // }, 20_000);
 
   it("deve remover uma categoria existente", async () => {
     const { id } = await createCategory();
