@@ -17,7 +17,9 @@ app.get("/", (req, res) => {
 // ==============================
 // Swagger Documentation
 // ==============================
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serveFiles(swaggerSpec));
+app.get("/api-docs", swaggerUi.setup(swaggerSpec));
+app.get("/api-docs/", swaggerUi.setup(swaggerSpec));
 
 // ==============================
 // Routes
